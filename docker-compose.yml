@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  station-service:
+    build: ./station-service
+    container_name: station-service
+    ports:
+      - "4001:4001"
+    environment:
+      - PORT=4001
+      - MONGO_URI=${MONGO_URI}
+      - JWT_SECRET=${JWT_SECRET}
+    networks:
+      - chargemate-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  booking-service:
+    build: ./booking-service
+    container_name: booking-service
+    ports:
+      - "4002:4002"
+    environment:
+      - PORT=4002
+      - MONGO_URI=${MONGO_URI}
+      - JWT_SECRET=${JWT_SECRET}
+      - STATION_SERVICE_URL=http://station-service:4001
+    depends_on:
+      - station-service
+    networks:
+      - chargemate-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_STATION_API=http://localhost:4001
+      - NEXT_PUBLIC_BOOKING_API=http://localhost:4002
+    depends_on:
+      - station-service
+      - booking-service
+    networks:
+      - chargemate-network
+    restart: unless-stopped
+
+networks:
+  chargemate-network:
+    driver: bridge
