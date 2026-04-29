@@ -8,3 +8,4 @@ dist/
 coverage/
 *.pem
 .aws/
+npm-debug.log*
