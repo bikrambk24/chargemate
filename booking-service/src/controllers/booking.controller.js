@@ -1,20 +1,10 @@
 const axios = require('axios');
 const Booking = require('../models/Booking.model');
 
-// Station service base URL (set via environment variable)
+// Station service base URL
 const STATION_SERVICE_URL =
   process.env.STATION_SERVICE_URL || 'http://localhost:4001';
 
-/**
- * POST /api/bookings
- * Create a new charging session booking.
- * Steps:
- *  1. Fetch station details from station-service
- *  2. Validate slot availability and charger type
- *  3. Calculate cost
- *  4. Decrement station slot via station-service
- *  5. Save booking to MongoDB
- */
 const createBooking = async (req, res, next) => {
   try {
     const { stationId, chargerType, startTime, endTime } = req.body;

@@ -1,13 +1,7 @@
 const jwt = require('jsonwebtoken');
 
-/**
- * Auth Middleware for Booking Service
- * Verifies JWT token independently (does not call station-service).
- * The token was originally issued by station-service auth,
- * but both services share the same JWT_SECRET so verification works here too.
- */
 
-// Middleware: verify Bearer JWT token
+// Middleware
 const protect = (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;

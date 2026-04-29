@@ -51,7 +51,6 @@ const startServer = async () => {
   }
 };
 
-// Only start server when not running tests
 if (process.env.NODE_ENV !== 'test') {
   startServer();
 }

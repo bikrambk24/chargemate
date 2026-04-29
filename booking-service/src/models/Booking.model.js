@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
  */
 const bookingSchema = new mongoose.Schema(
   {
-    // User information (stored directly to avoid cross-service DB calls)
+    // User information
     userId: {
       type: String,
       required: [true, 'User ID is required']
