@@ -1,0 +1,130 @@
+/* ── ChargeMate Global Styles ─────────────────────────── */
+:root {
+  --cm-green: #2ecc71;
+  --cm-green-dark: #27ae60;
+  --cm-navy: #1a1a2e;
+  --cm-blue: #16213e;
+  --cm-red: #e74c3c;
+  --cm-orange: #e67e22;
+  --cm-grey: #f8f9fa;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--cm-grey);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #2c3e50;
+}
+
+/* ── Navbar ───────────────────────────────────────────── */
+.cm-navbar {
+  background-color: var(--cm-navy) !important;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.navbar-brand {
+  font-weight: 800;
+  font-size: 1.4rem;
+  letter-spacing: -0.5px;
+}
+
+/* ── Cards ────────────────────────────────────────────── */
+.cm-card {
+  border: none !important;
+  border-radius: 16px !important;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cm-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.14);
+}
+
+/* ── Charger Type Badges ──────────────────────────────── */
+.badge-slow   { background-color: #3498db !important; color: white !important; }
+.badge-fast   { background-color: #e67e22 !important; color: white !important; }
+.badge-rapid  { background-color: #e74c3c !important; color: white !important; }
+
+/* ── Availability ─────────────────────────────────────── */
+.slot-high   { color: #27ae60; font-weight: 700; }
+.slot-medium { color: #e67e22; font-weight: 700; }
+.slot-low    { color: #e74c3c; font-weight: 700; }
+
+/* ── Booking Status ───────────────────────────────────── */
+.status-confirmed { color: #27ae60; }
+.status-pending   { color: #f39c12; }
+.status-cancelled { color: #e74c3c; }
+.status-completed { color: #3498db; }
+
+/* ── Hero Section ─────────────────────────────────────── */
+.hero-section {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  color: white;
+  padding: 90px 0;
+  min-height: 480px;
+  display: flex;
+  align-items: center;
+}
+
+/* ── Stat Cards ───────────────────────────────────────── */
+.stat-card {
+  background: white;
+  border-radius: 16px;
+  padding: 28px 20px;
+  text-align: center;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  height: 100%;
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--cm-green);
+  line-height: 1.1;
+}
+
+/* ── Buttons ──────────────────────────────────────────── */
+.btn-cm {
+  background-color: var(--cm-green);
+  border-color: var(--cm-green);
+  color: white;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.btn-cm:hover {
+  background-color: var(--cm-green-dark);
+  border-color: var(--cm-green-dark);
+  color: white;
+}
+
+/* ── Forms ────────────────────────────────────────────── */
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--cm-green);
+  box-shadow: 0 0 0 0.2rem rgba(46, 204, 113, 0.25);
+}
+
+/* ── Footer ───────────────────────────────────────────── */
+.cm-footer {
+  background-color: var(--cm-navy);
+  color: #aaa;
+  padding: 24px 0;
+  margin-top: 60px;
+}
+
+/* ── Page headings ────────────────────────────────────── */
+.page-heading {
+  font-weight: 800;
+  color: var(--cm-navy);
+  margin-bottom: 8px;
+}
+
+/* ── Loading spinner ──────────────────────────────────── */
+.cm-spinner {
+  color: var(--cm-green) !important;
+}
