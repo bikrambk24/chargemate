@@ -1,0 +1,37 @@
+# docker-compose.test.yml 
+# Used by Jenkins CI to run all tests in containers 
+# Author: Suju (HE39012) – QA & Automation Engineer 
+ 
+version: '3.8' 
+ 
+services: 
+ # Run station service unit tests 
+ station-service-test: 
+   build: 
+     context: ./station-service 
+     dockerfile: Dockerfile 
+   container_name: station-test 
+   environment: 
+     - NODE_ENV=test 
+     - PORT=4001 
+     - JWT_SECRET= 
+     - MONGO_URI= 
+   command: npm run test:ci 
+   volumes: 
+     - ./station-service/coverage:/app/coverage 
+ 
+ # Run booking service unit tests 
+ booking-service-test: 
+   build: 
+     context: ./booking-service 
+     dockerfile: Dockerfile 
+   container_name: booking-test 
+   environment: 
+     - NODE_ENV=test 
+     - PORT=4002 
+     - JWT_SECRET= 
+     - MONGO_URI= 
+     - STATION_SERVICE_URL=http://localhost:4001 
+   command: npm run test:ci 
+   volumes: 
+     - ./booking-service/coverage:/app/coverage 
