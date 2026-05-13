@@ -1,0 +1,55 @@
+{
+  "AWSEBDockerrunVersion": 2,
+  "containerDefinitions": [
+    {
+      "name": "station-service",
+      "image": "AWS_ACCOUNT_ID.dkr.ecr.eu-west-2.amazonaws.com/chargemate-station-service:STATION_IMAGE_TAG",
+      "essential": true,
+      "memory": 256,
+      "portMappings": [
+        {
+          "hostPort": 4001,
+          "containerPort": 4001
+        }
+      ],
+      "environment": [
+        { "name": "PORT", "value": "4001" },
+        { "name": "NODE_ENV", "value": "production" }
+      ]
+    },
+    {
+      "name": "booking-service",
+      "image": "AWS_ACCOUNT_ID.dkr.ecr.eu-west-2.amazonaws.com/chargemate-booking-service:BOOKING_IMAGE_TAG",
+      "essential": true,
+      "memory": 256,
+      "portMappings": [
+        {
+          "hostPort": 4002,
+          "containerPort": 4002
+        }
+      ],
+      "links": ["station-service"],
+      "environment": [
+        { "name": "PORT", "value": "4002" },
+        { "name": "NODE_ENV", "value": "production" },
+        { "name": "STATION_SERVICE_URL", "value": "http://station-service:4001" }
+      ]
+    },
+    {
+      "name": "frontend",
+      "image": "AWS_ACCOUNT_ID.dkr.ecr.eu-west-2.amazonaws.com/chargemate-frontend:FRONTEND_IMAGE_TAG",
+      "essential": true,
+      "memory": 512,
+      "portMappings": [
+        {
+          "hostPort": 80,
+          "containerPort": 3000
+        }
+      ],
+      "links": ["station-service", "booking-service"],
+      "environment": [
+        { "name": "NODE_ENV", "value": "production" }
+      ]
+    }
+  ]
+}
