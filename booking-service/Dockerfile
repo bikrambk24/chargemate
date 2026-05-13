@@ -1,7 +1,6 @@
-# Use official Node.js LTS Alpine image (lightweight)
+
 FROM node:18-alpine
 
-# Set working directory inside container
 WORKDIR /app
 
 # Copy package files first to leverage Docker layer caching
@@ -16,7 +15,7 @@ COPY . .
 # Expose service port
 EXPOSE 4002
 
-# Docker health check (requires wget in alpine, so install it)
+# Docker health check
 RUN apk add --no-cache wget
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
