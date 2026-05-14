@@ -2,12 +2,12 @@ pipeline {
   agent any
 
   environment {
-    AWS_REGION    = 'eu-west-1'
+    AWS_REGION    = 'us-east-1'
     EB_APP_NAME   = 'chargemate'
     EB_ENV_NAME   = 'chargemate-production'
     DEPLOY_BUCKET = 'chargemate-deployments-016963913530'
-    ECR_REGISTRY  = '016963913530.dkr.ecr.eu-west-1.amazonaws.com'
-  }
+    ECR_REGISTRY  = '016963913530.dkr.ecr.us-east-1.amazonaws.com'
+}
 
   stages {
 
