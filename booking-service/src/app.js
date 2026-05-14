@@ -5,12 +5,11 @@ const cors = require('cors');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 
-const stationRoutes = require('./routes/station.routes');
-const authRoutes = require('./routes/auth.routes');
+const bookingRoutes = require('./routes/booking.routes');
 const { errorHandler } = require('./middleware/error.middleware');
 
 const app = express();
-const PORT = process.env.PORT || 4001;
+const PORT = process.env.PORT || 4002;
 
 // ─────────────────────────────────────────────
 // Middleware
@@ -25,7 +24,7 @@ app.use(express.json());
 app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'healthy',
-    service: 'station-service',
+    service: 'booking-service',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
   });
@@ -34,8 +33,7 @@ app.get('/health', (req, res) => {
 // ─────────────────────────────────────────────
 // Routes
 // ─────────────────────────────────────────────
-app.use('/api/auth', authRoutes);
-app.use('/api/stations', stationRoutes);
+app.use('/api/bookings', bookingRoutes);
 
 // ─────────────────────────────────────────────
 // 404 Handler
@@ -68,16 +66,16 @@ const connectDB = async () => {
 };
 
 // ─────────────────────────────────────────────
-// Server Start
+// Server Start Logic
 // ─────────────────────────────────────────────
 if (process.env.NODE_ENV !== 'test') {
   connectDB().then(() => {
     app.listen(PORT, () => {
-      console.log(`Station Service running on port ${PORT}`);
+      console.log(`Booking Service running on port ${PORT}`);
     });
   });
 } else {
-  // In test mode: connect DB but do NOT start HTTP server
+  // Test mode: connect DB only, no HTTP server
   connectDB();
 }
 
