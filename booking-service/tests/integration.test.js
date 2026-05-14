@@ -17,7 +17,7 @@ const app = require('../src/app');
 
 // ─── Setup: Create test tokens ────────────────────────────────────────────────
 const JWT_SECRET =
-  process.env.JWT_SECRET || '***REMOVED***';
+  process.env.JWT_SECRET || 'chargemate_jwt_secret_devops_module_2025_swe7303';
 
 const userToken = jwt.sign(
   {
