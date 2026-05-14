@@ -2,13 +2,11 @@ pipeline {
   agent any
 
   environment {
-    JWT_SECRET     = 'chargemate_jwt_secret_devops_module_2025_swe7303'
-    MONGO_URI      = 'mongodb://bikram:g4JgPOvBokCI0B3K@ac-pyaby8b-shard-00-00.w9oeos2.mongodb.net:27017,ac-pyaby8b-shard-00-01.w9oeos2.mongodb.net:27017,ac-pyaby8b-shard-00-02.w9oeos2.mongodb.net:27017/?ssl=true&replicaSet=atlas-11yunw-shard-0&authSource=admin&appName=DevOps'
-    AWS_REGION     = 'eu-west-1'
-    EB_APP_NAME    = 'chargemate'
-    EB_ENV_NAME    = 'chargemate-production'
-    DEPLOY_BUCKET  = 'chargemate-deployments-016963913530'
-    ECR_REGISTRY   = '016963913530.dkr.ecr.eu-west-1.amazonaws.com'
+    AWS_REGION    = 'eu-west-1'
+    EB_APP_NAME   = 'chargemate'
+    EB_ENV_NAME   = 'chargemate-production'
+    DEPLOY_BUCKET = 'chargemate-deployments-016963913530'
+    ECR_REGISTRY  = '016963913530.dkr.ecr.eu-west-1.amazonaws.com'
   }
 
   stages {
@@ -18,43 +16,39 @@ pipeline {
         echo "Checking out code from GitHub..."
         checkout scm
         sh 'ls -la'
-        echo "Checkout complete. Branch: ${env.GIT_BRANCH}"
+        echo "Checkout complete"
       }
     }
 
     stage('Install Station Service') {
       steps {
-        echo "Installing station-service dependencies..."
         dir('station-service') {
           sh 'npm ci'
         }
-        echo "Station service ready"
+        echo "Station service dependencies installed"
       }
     }
 
     stage('Install Booking Service') {
       steps {
-        echo "Installing booking-service dependencies..."
         dir('booking-service') {
           sh 'npm ci'
         }
-        echo "Booking service ready"
+        echo "Booking service dependencies installed"
       }
     }
 
     stage('Install Frontend') {
       steps {
-        echo "Installing frontend dependencies..."
         dir('frontend') {
           sh 'npm ci'
         }
-        echo "Frontend ready"
+        echo "Frontend dependencies installed"
       }
     }
 
     stage('Lint Station Service') {
       steps {
-        echo "Running ESLint on station-service..."
         dir('station-service') {
           sh 'npm run lint || true'
         }
@@ -64,7 +58,6 @@ pipeline {
 
     stage('Lint Booking Service') {
       steps {
-        echo "Running ESLint on booking-service..."
         dir('booking-service') {
           sh 'npm run lint || true'
         }
@@ -74,9 +67,13 @@ pipeline {
 
     stage('Test Station Service') {
       steps {
-        echo "Running station-service tests..."
-        dir('station-service') {
-          sh 'npm run test:ci'
+        withCredentials([
+          string(credentialsId: 'mongo-uri', variable: 'MONGO_URI'),
+          string(credentialsId: 'jwt-secret', variable: 'JWT_SECRET')
+        ]) {
+          dir('station-service') {
+            sh 'npm run test:ci'
+          }
         }
         echo "Station service tests passed"
       }
@@ -84,9 +81,13 @@ pipeline {
 
     stage('Test Booking Service') {
       steps {
-        echo "Running booking-service tests..."
-        dir('booking-service') {
-          sh 'npm run test:ci'
+        withCredentials([
+          string(credentialsId: 'mongo-uri', variable: 'MONGO_URI'),
+          string(credentialsId: 'jwt-secret', variable: 'JWT_SECRET')
+        ]) {
+          dir('booking-service') {
+            sh 'npm run test:ci'
+          }
         }
         echo "Booking service tests passed"
       }
@@ -96,12 +97,10 @@ pipeline {
       steps {
         echo "Building Docker images..."
         sh 'docker build -t chargemate-station-service:latest ./station-service'
-        echo "Station service image built"
         sh 'docker build -t chargemate-booking-service:latest ./booking-service'
-        echo "Booking service image built"
         sh 'docker build -t chargemate-frontend:latest ./frontend'
-        echo "Frontend image built"
         sh 'docker images | grep chargemate'
+        echo "All Docker images built successfully"
       }
     }
 
@@ -163,7 +162,7 @@ pipeline {
               --source-bundle S3Bucket=${DEPLOY_BUCKET},S3Key=deploy-${BUILD_NUMBER}.zip \
               --region ${AWS_REGION}
 
-            echo Deploying to environment ${EB_ENV_NAME}...
+            echo Deploying to ${EB_ENV_NAME}...
             aws elasticbeanstalk update-environment \
               --application-name ${EB_APP_NAME} \
               --environment-name ${EB_ENV_NAME} \
@@ -189,20 +188,19 @@ pipeline {
             aws elasticbeanstalk describe-environments \
               --application-name ${EB_APP_NAME} \
               --environment-names ${EB_ENV_NAME} \
-              --query 'Environments[0].{Status:Status,Health:Health}' \
+              --query 'Environments[0].{Status:Status,Health:Health,URL:CNAME}' \
               --output table \
               --region ${AWS_REGION}
-            echo Deployment verification complete
           """
         }
+        echo "Verification complete"
       }
     }
 
     stage('Health Check') {
       steps {
-        echo "Pipeline health check stage complete"
-        echo "Application deployed to AWS Elastic Beanstalk"
-        echo "Monitor via AWS CloudWatch"
+        echo "Pipeline complete - application deployed to AWS"
+        echo "Monitor at: https://console.aws.amazon.com/elasticbeanstalk"
       }
     }
 
@@ -211,11 +209,10 @@ pipeline {
   post {
     success {
       echo "PIPELINE SUCCEEDED - Build ${BUILD_NUMBER}"
-      echo "ChargeMate deployed to AWS successfully"
+      echo "ChargeMate deployed to AWS Elastic Beanstalk"
     }
     failure {
       echo "PIPELINE FAILED - Build ${BUILD_NUMBER}"
-      echo "Check console output for details"
       withCredentials([[
         $class: 'AmazonWebServicesCredentialsBinding',
         credentialsId: 'aws-credentials',
@@ -223,7 +220,7 @@ pipeline {
         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
       ]]) {
         sh """
-          echo Initiating rollback to previous version...
+          echo Initiating rollback...
           PREV=\$(aws elasticbeanstalk describe-application-versions \
             --application-name ${EB_APP_NAME} \
             --region ${AWS_REGION} \
@@ -237,8 +234,6 @@ pipeline {
               --version-label \$PREV \
               --region ${AWS_REGION}
             echo Rollback complete
-          else
-            echo No previous version found for rollback
           fi
         """
       }
