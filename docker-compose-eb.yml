@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  station-service:
+    image: 016963913530.dkr.ecr.us-east-1.amazonaws.com/chargemate-station-service:latest
+    ports:
+      - "4001:4001"
+    environment:
+      - PORT=4001
+      - NODE_ENV=production
+      - MONGO_URI=${MONGO_URI}
+      - JWT_SECRET=${JWT_SECRET}
+    restart: always
+
+  booking-service:
+    image: 016963913530.dkr.ecr.us-east-1.amazonaws.com/chargemate-booking-service:latest
+    ports:
+      - "4002:4002"
+    environment:
+      - PORT=4002
+      - NODE_ENV=production
+      - MONGO_URI=${MONGO_URI}
+      - JWT_SECRET=${JWT_SECRET}
+      - STATION_SERVICE_URL=http://station-service:4001
+    depends_on:
+      - station-service
+    restart: always
+
+  frontend:
+    image: 016963913530.dkr.ecr.us-east-1.amazonaws.com/chargemate-frontend:latest
+    ports:
+      - "80:3000"
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - station-service
+      - booking-service
+    restart: always
