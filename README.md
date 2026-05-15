@@ -1,6 +1,6 @@
 # ChargeMate – EV Charging Station Finder & Booking System
 
-A cloud-native microservices application built for the DevOps module at Regent College London.
+A cloud-native microservices application built for the DevOps module.
 
 ## Project Overview
 
