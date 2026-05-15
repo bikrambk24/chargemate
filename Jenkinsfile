@@ -139,41 +139,46 @@ pipeline {
     }
 
     stage('Deploy to Elastic Beanstalk') {
-      steps {
-        withCredentials([[
-          $class: 'AmazonWebServicesCredentialsBinding',
-          credentialsId: 'aws-credentials',
-          accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-          secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-        ]]) {
-          sh """
-            echo Creating deployment package...
-            zip -r deploy-${BUILD_NUMBER}.zip aws/Dockerrun.aws.json
+        steps {
+            withCredentials([[
+            $class: 'AmazonWebServicesCredentialsBinding',
+            credentialsId: 'aws-credentials',
+            accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+            secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+            ]]) {
+            sh """
+                echo Creating deployment package...
+                cp docker-compose-eb.yml docker-compose.yml
+                zip deploy-${BUILD_NUMBER}.zip docker-compose.yml
+                rm docker-compose.yml
 
-            echo Uploading to S3...
-            aws s3 cp deploy-${BUILD_NUMBER}.zip \
-              s3://${DEPLOY_BUCKET}/deploy-${BUILD_NUMBER}.zip \
-              --region ${AWS_REGION}
+                echo Uploading to S3...
+                aws s3 cp deploy-${BUILD_NUMBER}.zip \
+                s3://${DEPLOY_BUCKET}/deploy-${BUILD_NUMBER}.zip \
+                --region ${AWS_REGION}
 
-            echo Creating application version v${BUILD_NUMBER}...
-            aws elasticbeanstalk create-application-version \
-              --application-name ${EB_APP_NAME} \
-              --version-label v${BUILD_NUMBER} \
-              --source-bundle S3Bucket=${DEPLOY_BUCKET},S3Key=deploy-${BUILD_NUMBER}.zip \
-              --region ${AWS_REGION}
+                echo Creating application version...
+                VERSION_LABEL="v${BUILD_NUMBER}-\$(date +%Y%m%d%H%M%S)"
+                echo "Version label: \$VERSION_LABEL"
 
-            echo Deploying to ${EB_ENV_NAME}...
-            aws elasticbeanstalk update-environment \
-              --application-name ${EB_APP_NAME} \
-              --environment-name ${EB_ENV_NAME} \
-              --version-label v${BUILD_NUMBER} \
-              --region ${AWS_REGION}
+                aws elasticbeanstalk create-application-version \
+                --application-name ${EB_APP_NAME} \
+                --version-label \$VERSION_LABEL \
+                --source-bundle S3Bucket=${DEPLOY_BUCKET},S3Key=deploy-${BUILD_NUMBER}.zip \
+                --region ${AWS_REGION}
 
-            echo Deployment initiated successfully
-          """
+                echo Deploying to ${EB_ENV_NAME}...
+                aws elasticbeanstalk update-environment \
+                --application-name ${EB_APP_NAME} \
+                --environment-name ${EB_ENV_NAME} \
+                --version-label \$VERSION_LABEL \
+                --region ${AWS_REGION}
+
+                echo Deployment initiated - version \$VERSION_LABEL
+            """
+            }
         }
-      }
-    }
+}
 
     stage('Verify Deployment') {
       steps {
