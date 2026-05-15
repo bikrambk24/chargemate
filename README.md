@@ -111,7 +111,7 @@ The project uses Jenkins for CI/CD with the following stages:
 
 ## AWS Infrastructure
 
-- **ECR** – Docker image registry (3 repositories)
+- **ECR** – Docker image registry (It has 3 repositories)
 - **Elastic Beanstalk** – Application hosting
 - **S3** – Deployment artifact storage
 - **CloudWatch** – Monitoring and logging
