@@ -1,4 +1,3 @@
-# Stage 1: Install dependencies and build
 FROM node:20-alpine AS builder
 
 WORKDIR /app
@@ -9,14 +8,13 @@ RUN npm ci
 
 COPY . .
 
-ARG NEXT_PUBLIC_STATION_API=http://localhost:4001
-ARG NEXT_PUBLIC_BOOKING_API=http://localhost:4002
+ARG NEXT_PUBLIC_STATION_API=http://chargemate-production.eba-2vauspwj.us-east-1.elasticbeanstalk.com:4001
+ARG NEXT_PUBLIC_BOOKING_API=http://chargemate-production.eba-2vauspwj.us-east-1.elasticbeanstalk.com:4002
 ENV NEXT_PUBLIC_STATION_API=$NEXT_PUBLIC_STATION_API
 ENV NEXT_PUBLIC_BOOKING_API=$NEXT_PUBLIC_BOOKING_API
 
 RUN npm run build
 
-# Stage 2: Production runner
 FROM node:20-alpine AS runner
 
 WORKDIR /app
