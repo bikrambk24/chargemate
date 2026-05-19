@@ -25,7 +25,7 @@ Database (MongoDB Atlas)
 
 ### Prerequisites
 
-- Node.js 20+
+- Node.js
 - Docker
 - MongoDB Atlas account
 
