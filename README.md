@@ -134,15 +134,3 @@ URL: http://chargemate-production.eba-2vauspwj.us-east-1.elasticbeanstalk.com
 main     → production ready code, triggers Jenkins pipeline
 develop  → integration branch, all features merged here
 feature/ → individual feature branches for each team member
-
-## Project Structure
-chargemate/
-├── station-service/     # Backend API for stations and auth
-├── booking-service/     # Backend API for bookings
-├── frontend/            # Next.js frontend application
-├── aws/                 # AWS deployment configuration
-├── scripts/             # Health check and rollback scripts
-├── monitoring/          # CloudWatch monitoring setup
-├── Jenkinsfile          # CI/CD pipeline definition
-├── docker-compose.yml   # Local development setup
-└── docker-compose-eb.yml # AWS Elastic Beanstalk deployment
