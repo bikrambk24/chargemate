@@ -129,8 +129,3 @@ URL: http://chargemate-production.eba-2vauspwj.us-east-1.elasticbeanstalk.com
 - Cancel bookings with automatic slot restoration
 - Admin dashboard with station and booking management
 - Role-based access control (admin and user roles)
-
-## Branch Strategy
-main     → production ready code, triggers Jenkins pipeline
-develop  → integration branch, all features merged here
-feature/ → individual feature branches for each team member
